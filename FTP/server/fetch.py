@@ -36,32 +36,13 @@ if not os.path.exists(temp_folder):
 # =========================
 # Railway ENV credentials
 # =========================
-private_key_raw = os.environ["FTP_PRIVATE_KEY"]
-private_key_raw = private_key_raw.replace("\\n", "\n")
+private_key = paramiko.Ed25519Key.from_private_key_file("/data/ftp_key")
 
-# schrijf key naar temp file
-with tempfile.NamedTemporaryFile(mode="w+", delete=False) as f:
-    f.write(private_key_raw)
-    key_path = f.name
+hostname = os.environ.get("FTP_HOST", "91.213.201.22")
+username_sftp = os.environ.get("FTP_USER", "3182")
+remote_dir = os.environ.get("FTP_REMOTE_DIR", "/outgoing")
 
-# probeer key types (volgorde maakt niet uit)
-private_key = None
-for key_cls in (
-    paramiko.RSAKey,
-    paramiko.Ed25519Key,
-    paramiko.ECDSAKey,
-):
-    try:
-        private_key = key_cls.from_private_key_file(key_path)
-        break
-    except Exception:
-        pass
 
-if private_key is None:
-    raise RuntimeError("Kon geen geldige private key laden")
-
-# cleanup
-os.remove(key_path)
 
 # Regex-patronen voor het vinden van datums in bestandsnamen
 date_patterns = [
