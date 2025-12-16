@@ -1,8 +1,10 @@
 import paramiko
 import os
 import sys
+
 sys.path.append('/utility')
 import re
+import io
 import zipfile
 from datetime import datetime, timedelta
 import subprocess
@@ -11,11 +13,6 @@ BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../"))
 sys.path.insert(0, BASE_DIR)
 
 from Functions.system.path import root_dir, base_dir
-
-
-
-
-
 
 # Bepaal de map van dit script, zodat we daar een logbestand kunnen wegschrijven
 
@@ -29,29 +26,32 @@ with open(log_file_path, 'a', encoding='utf-8') as log_file:
 # Bereken datum voor 2 maanden geleden
 two_months_ago = (datetime.now() - timedelta(days=60))
 
-
 # Maak een tijdelijke map aan in de parent map van de doelmap
 temp_folder = os.path.join(os.path.dirname(root_dir), "temp")
 if not os.path.exists(temp_folder):
     os.makedirs(temp_folder)
     print(f"Tijdelijke map gemaakt: {temp_folder}")
 
-# SFTP-server en authenticatiegegevens
-hostname = "91.213.201.22"
-username_sftp = "3182"
-private_key_path = r"C:\Users\Operations\Documents\test\test123\lala/Private Key Treecap - 3 - openssh"  # Vervang door het juiste pad naar de private key op je NAS
+# =========================
+# Railway ENV credentials
+# =========================
+hostname = os.environ["FTP_HOST"]
+username_sftp = os.environ["FTP_USER"]
+remote_dir = os.environ.get("FTP_REMOTE_DIR", "/")
 
-# Remote directory waar de bestanden vandaan moeten komen
-remote_dir = "/outgoing/"
+# Private key uit ENV (string!)
+private_key_raw = os.environ["FTP_PRIVATE_KEY"]
 
-# Laad de private key
-private_key = paramiko.RSAKey.from_private_key_file(private_key_path)
+private_key = paramiko.RSAKey.from_private_key(
+    io.StringIO(private_key_raw)
+)
 
 # Regex-patronen voor het vinden van datums in bestandsnamen
 date_patterns = [
     r"20\d{2}[01]\d[0-3]\d",  # YYYYMMDD, begint altijd met 20
-    r"20\d{2}-\d{2}-\d{2}",   # YYYY-MM-DD, begint altijd met 20
+    r"20\d{2}-\d{2}-\d{2}",  # YYYY-MM-DD, begint altijd met 20
 ]
+
 
 def find_date_in_filename(filename):
     for pattern in date_patterns:
@@ -60,10 +60,12 @@ def find_date_in_filename(filename):
             return match.group()
     return None
 
+
 def unzip_file(zip_filepath, extract_to_folder):
     with zipfile.ZipFile(zip_filepath, 'r') as zip_ref:
         zip_ref.extractall(extract_to_folder)
     print(f"Bestand uitgepakt naar {extract_to_folder}")
+
 
 def format_date_to_yyyy_mm_dd(date_str):
     if re.match(r"20\d{2}[01]\d[0-3]\d", date_str):
@@ -73,11 +75,13 @@ def format_date_to_yyyy_mm_dd(date_str):
     else:
         raise ValueError(f"Ongeldig datumformaat: {date_str}")
 
+
 def find_isin_code(filename):
     match = re.search(r'[A-Z]{2}\d{10}', filename)
     if match:
         return match.group()
     return None
+
 
 def process_files():
     try:
@@ -150,7 +154,7 @@ def process_files():
         with open(log_file_path, 'a', encoding='utf-8') as log_file:
             log_file.write(f"Fout bij verbinden SFTP-server: {e}\n")
 
+
 # Voer het proces uit
 process_files()
 print("Bestanden verwerkt.")
-
