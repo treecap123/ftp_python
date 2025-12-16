@@ -39,10 +39,12 @@ hostname = os.environ["FTP_HOST"]
 username_sftp = os.environ["FTP_USER"]
 remote_dir = os.environ.get("FTP_REMOTE_DIR", "/")
 
-# Private key uit ENV (string!)
 private_key_raw = os.environ["FTP_PRIVATE_KEY"]
 
-private_key = paramiko.RSAKey.from_private_key(
+# Railway escape-fix
+private_key_raw = private_key_raw.replace("\\n", "\n")
+
+private_key = paramiko.PKey.from_private_key(
     io.StringIO(private_key_raw)
 )
 
