@@ -13,7 +13,6 @@ BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../"))
 sys.path.insert(0, BASE_DIR)
 
 from Functions.system.path import root_dir, base_dir
-from Functions.config.config import ftp_key
 
 # Bepaal de map van dit script, zodat we daar een logbestand kunnen wegschrijven
 
@@ -40,7 +39,12 @@ hostname = os.environ["FTP_HOST"]
 username_sftp = os.environ["FTP_USER"]
 remote_dir = os.environ.get("FTP_REMOTE_DIR", "/")
 
+# Private key uit ENV (string!)
+private_key_raw = os.environ["FTP_PRIVATE_KEY"]
 
+private_key = paramiko.RSAKey.from_private_key(
+    io.StringIO(private_key_raw)
+)
 
 # Regex-patronen voor het vinden van datums in bestandsnamen
 date_patterns = [
@@ -83,7 +87,7 @@ def process_files():
     try:
         client = paramiko.SSHClient()
         client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        client.connect(hostname, username=username_sftp, pkey=ftp_key)
+        client.connect(hostname, username=username_sftp, pkey=private_key)
         sftp = client.open_sftp()
         sftp.chdir(remote_dir)
 
