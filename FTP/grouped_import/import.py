@@ -11,12 +11,13 @@ import io
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
 
 # --- Imports uit global_functions ---
-from global_functions.system.path import home_dir, tables_path, dropbox_path
-from global_functions.notifications.popup import verstuur_remote_popup
-from global_functions.date.date_functions import get_previous_workday, select_date, working_days
-from global_functions.database_connection.connection import get_cursor, get_railway_cursor
-from global_functions.database.lookup import account, instrument
-from global_functions.log_tools.logging import Color
+from Functions.connection.db_connection import get_cursor
+from Functions.system.path import home_dir, tables_path,
+from Functions.date.date_functions import working_days
+from Functions.log_tools.logging import Color
+from Functions.database.lookup import account, instrument
+
+
 
 # --- Laad tables configuratie ---
 spec = importlib.util.spec_from_file_location("tables", tables_path)
@@ -28,7 +29,7 @@ print(f"Working days to check: {werkdagen}")
 
 # --- Gebruik Railway DB-verbinding ---
 mycursor, conn = get_cursor()
-railway_cursor, railway_conn = get_railway_cursor()
+railway_cursor, railway_conn = get_cursor()
 
 
 def select_date(table):
