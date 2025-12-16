@@ -36,7 +36,7 @@ if not os.path.exists(temp_folder):
 # =========================
 # Railway ENV credentials
 # =========================
-private_key = paramiko.Ed25519Key.from_private_key_file("/data/ftp_key")
+private_key = paramiko.RSAKey.from_private_key_file("/data/ftp_key")
 
 hostname = os.environ.get("FTP_HOST", "91.213.201.22")
 username_sftp = os.environ.get("FTP_USER", "3182")
