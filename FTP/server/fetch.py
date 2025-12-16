@@ -9,7 +9,8 @@ import subprocess
 
 from Functions.system.path import root_dir, base_dir
 
-sys.path.insert(0, base_dir)
+sys.path.append(base_dir)
+
 
 
 
