@@ -2,6 +2,8 @@ import os
 
 # Railway heeft geen Documents-map → gebruik werkdirectory
 root_dir = "/data"
+base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../"))
+
 
 
 # Dropbox-pad

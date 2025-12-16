@@ -7,7 +7,10 @@ import zipfile
 from datetime import datetime, timedelta
 import subprocess
 
-from Functions.system.path import root_dir
+from Functions.system.path import root_dir, base_dir
+
+sys.path.insert(0, base_dir)
+
 
 
 
