@@ -15,27 +15,28 @@ sys.path.insert(0, BASE_DIR)
 
 from Functions.system.path import root_dir, base_dir
 
-# Logbestand
+# =========================
+# LOGGING
+# =========================
 log_file_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "process.log")
 
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 with open(log_file_path, 'a', encoding='utf-8') as log_file:
-    log_file.write(f"\n=== Start run: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} ===\n")
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    log_file.write(f"\n=== START RUN: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} ===\n")
 
-# Datum 2 maanden geleden
-two_months_ago = (datetime.now() - timedelta(days=60))
-
-# Temp map
+# =========================
+# TEMP MAP
+# =========================
 temp_folder = os.path.join(os.path.dirname(root_dir), "temp")
-if not os.path.exists(temp_folder):
-    os.makedirs(temp_folder)
-    print(f"Tijdelijke map gemaakt: {temp_folder}")
+os.makedirs(temp_folder, exist_ok=True)
+
+print("\n" + "=" * 80)
+print("📁 TEMP MAP GEBRUIKT:")
+print(f"👉 {temp_folder}")
+print("=" * 80 + "\n")
 
 # =========================
-# FTP / Railway credentials
+# FTP / SFTP SETUP
 # =========================
-
 key_path = "/data/ftp_key"
 
 if not os.path.exists(key_path):
@@ -47,14 +48,22 @@ if not os.path.exists(key_path):
 
     os.chmod(key_path, 0o600)
 
-# >>> DIT MISSTE BIJ JOU <<<
 private_key = paramiko.RSAKey.from_private_key_file(key_path)
 
 hostname = os.environ.get("FTP_HOST", "91.213.201.22")
 username_sftp = os.environ.get("FTP_USER", "3182")
 remote_dir = os.environ.get("FTP_REMOTE_DIR", "/outgoing")
 
-# Regex voor datums
+print("\n" + "=" * 80)
+print("🔌 SFTP VERBINDING:")
+print(f"HOST      : {hostname}")
+print(f"USER      : {username_sftp}")
+print(f"REMOTE DIR: {remote_dir}")
+print("=" * 80 + "\n")
+
+# =========================
+# HELPERS
+# =========================
 date_patterns = [
     r"20\d{2}[01]\d[0-3]\d",
     r"20\d{2}-\d{2}-\d{2}",
@@ -70,88 +79,101 @@ def find_date_in_filename(filename):
 def unzip_file(zip_filepath, extract_to_folder):
     with zipfile.ZipFile(zip_filepath, 'r') as zip_ref:
         zip_ref.extractall(extract_to_folder)
-    print(f"Bestand uitgepakt naar {extract_to_folder}")
+
+    print("✅ ZIP UITGEPAKT")
+    print(f"📂 DOELMAP : {extract_to_folder}")
+
+    extracted_files = os.listdir(extract_to_folder)
+    if extracted_files:
+        print("📄 BESTANDEN GEVONDEN:")
+        for f in extracted_files:
+            print(f"   - {f}")
+    else:
+        print("❌ WAARSCHUWING: MAP IS LEEG NA UNZIP")
 
 def format_date_to_yyyy_mm_dd(date_str):
     if re.match(r"20\d{2}[01]\d[0-3]\d", date_str):
         return f"{date_str[:4]}-{date_str[4:6]}-{date_str[6:]}"
-    elif re.match(r"20\d{2}-\d{2}-\d{2}", date_str):
-        return date_str
-    else:
-        raise ValueError(f"Ongeldig datumformaat: {date_str}")
+    return date_str
 
 def find_isin_code(filename):
     match = re.search(r'[A-Z]{2}\d{10}', filename)
-    if match:
-        return match.group()
-    return None
+    return match.group() if match else None
 
+# =========================
+# MAIN PROCESS
+# =========================
 def process_files():
     try:
         client = paramiko.SSHClient()
         client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        client.connect(
-            hostname=hostname,
-            username=username_sftp,
-            pkey=private_key
-        )
+        client.connect(hostname=hostname, username=username_sftp, pkey=private_key)
 
         sftp = client.open_sftp()
         sftp.chdir(remote_dir)
 
-        created_directories = {}
         files = sftp.listdir()
-        print(f"Bestanden gevonden: {files}")
+
+        print("\n" + "=" * 80)
+        print("📥 BESTANDEN OP SFTP:")
+        for f in files:
+            print(f"   - {f}")
+        print("=" * 80 + "\n")
 
         for file in files:
-            try:
-                print(f"Processing file: {file}")
-                with open(log_file_path, 'a', encoding='utf-8') as log_file:
-                    log_file.write(f"Processing file: {file}\n")
+            print("\n" + "-" * 80)
+            print(f"🚀 VERWERKEN VAN BESTAND: {file}")
+            print("-" * 80)
 
-                if file.endswith('.html.zip'):
-                    isin_code = find_isin_code(file)
-                    if isin_code:
-                        html_folder = os.path.join(root_dir, "CA Notifications", isin_code)
-                        os.makedirs(html_folder, exist_ok=True)
+            if file.endswith('.html.zip'):
+                isin_code = find_isin_code(file)
+                if not isin_code:
+                    print("❌ GEEN ISIN GEVONDEN – SKIP")
+                    continue
 
-                        local_html_zip_path = os.path.join(html_folder, file)
-                        sftp.get(file, local_html_zip_path)
+                html_folder = os.path.join(root_dir, "CA Notifications", isin_code)
+                os.makedirs(html_folder, exist_ok=True)
 
-                        unzip_file(local_html_zip_path, html_folder)
-                        os.remove(local_html_zip_path)
-                    else:
-                        with open(log_file_path, 'a', encoding='utf-8') as log_file:
-                            log_file.write("Geen ISIN-code gevonden in HTML-bestand.\n")
-                else:
-                    found_date = find_date_in_filename(file)
-                    if found_date:
-                        formatted_date = format_date_to_yyyy_mm_dd(found_date)
-                        date_folder = os.path.join(root_dir, formatted_date)
+                print("📁 HTML BESTAND WORDT OPGESLAGEN IN:")
+                print(f"👉 {html_folder}")
 
-                        if formatted_date not in created_directories:
-                            os.makedirs(date_folder, exist_ok=True)
-                            created_directories[formatted_date] = True
+                local_zip = os.path.join(html_folder, file)
+                sftp.get(file, local_zip)
 
-                        local_zip_path = os.path.join(temp_folder, file)
-                        sftp.get(file, local_zip_path)
+                print(f"⬇️ GEDOWNLOAD: {local_zip}")
+                unzip_file(local_zip, html_folder)
+                os.remove(local_zip)
 
-                        unzip_file(local_zip_path, date_folder)
-                        os.remove(local_zip_path)
-                    else:
-                        with open(log_file_path, 'a', encoding='utf-8') as log_file:
-                            log_file.write("Geen datum gevonden in bestandsnaam.\n")
+            else:
+                found_date = find_date_in_filename(file)
+                if not found_date:
+                    print("❌ GEEN DATUM IN BESTANDSNAAM – SKIP")
+                    continue
 
-            except Exception as e:
-                with open(log_file_path, 'a', encoding='utf-8') as log_file:
-                    log_file.write(f"Fout bij verwerken van bestand '{file}': {e}\n")
+                formatted_date = format_date_to_yyyy_mm_dd(found_date)
+                date_folder = os.path.join(root_dir, formatted_date)
+                os.makedirs(date_folder, exist_ok=True)
+
+                print("📁 ZIP WORDT UITGEPAKT NAAR:")
+                print(f"👉 {date_folder}")
+
+                local_zip = os.path.join(temp_folder, file)
+                sftp.get(file, local_zip)
+
+                print(f"⬇️ GEDOWNLOAD NAAR TEMP:")
+                print(f"👉 {local_zip}")
+
+                unzip_file(local_zip, date_folder)
+                os.remove(local_zip)
 
         sftp.close()
         client.close()
 
+        print("\n" + "=" * 80)
+        print("✅ ALLE BESTANDEN ZIJN VERWERKT")
+        print("=" * 80 + "\n")
+
     except Exception as e:
-        with open(log_file_path, 'a', encoding='utf-8') as log_file:
-            log_file.write(f"Fout bij verbinden SFTP-server: {e}\n")
+        print("❌ FATALE FOUT:", e)
 
 process_files()
-print("Bestanden verwerkt.")
