@@ -178,6 +178,9 @@ while True:
             if file.endswith(".py"):
                 print(f"🚀 RUNNING IMPORT SCRIPT: {file}")
                 os.system(f"python {os.path.join(root_dir, 'single_imports', file)}")
+    except Exception as e:
+        print(f"⚠ ERROR RUNNING IMPORT SCRIPTS: {e}")
+        
 
     print("😴 SLEEPING 1 HOUR...\n")
     time.sleep(SLEEP_SECONDS)
