@@ -7,6 +7,7 @@ import zipfile
 import time
 from datetime import datetime
 from io import StringIO
+import shutil
 
 # =========================================================
 # PATHS
@@ -32,6 +33,7 @@ USERNAME = os.environ.get("FTP_USER", "3182")
 TEMP_DIR = os.path.join(os.path.dirname(root_dir), "temp")
 os.makedirs(TEMP_DIR, exist_ok=True)
 
+
 # =========================================================
 # SSH KEY LOAD
 # =========================================================
@@ -44,6 +46,28 @@ PRIVATE_KEY = paramiko.RSAKey.from_private_key(StringIO(private_key_str))
 # =========================================================
 DATE_PATTERNS = [r"20\d{2}[01]\d[0-3]\d", r"20\d{2}-\d{2}-\d{2}"]
 
+
+def cleanup_old_folders(base_dir, keep=5):
+
+    folders = []
+
+    for name in os.listdir(base_dir):
+        path = os.path.join(base_dir, name)
+
+        if os.path.isdir(path):
+            try:
+                d = datetime.strptime(name, "%Y-%m-%d")
+                folders.append((d, path))
+            except:
+                pass
+
+    folders.sort(reverse=True)
+
+    old_folders = folders[keep:]
+
+    for d, path in old_folders:
+        print(f"🗑 removing old folder {path}")
+        shutil.rmtree(path)
 def find_date(filename):
     for p in DATE_PATTERNS:
         m = re.search(p, filename)
@@ -142,6 +166,8 @@ while True:
             f.write(datetime.now().isoformat())
 
         print("✅ DONE")
+
+        cleanup_old_folders(root_dir, keep=5)
 
     sftp.close()
     client.close()
