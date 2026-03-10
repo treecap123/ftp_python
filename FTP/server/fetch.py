@@ -167,7 +167,7 @@ while True:
 
         print("✅ DONE")
 
-        cleanup_old_folders(root_dir, keep=5)
+    cleanup_old_folders(root_dir, keep=5)
 
     sftp.close()
     client.close()
