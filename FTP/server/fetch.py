@@ -174,6 +174,7 @@ while True:
 
     # run ../single_imports/alle python scripts in deze map
     try:
+        print(f"Looking in {os.path.join(root_dir, 'single_imports')} for import scripts...")
         for file in os.listdir(os.path.join(root_dir, "single_imports")):
             if file.endswith(".py"):
                 print(f"🚀 RUNNING IMPORT SCRIPT: {file}")

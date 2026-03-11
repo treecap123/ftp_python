@@ -47,13 +47,13 @@ def get_fx(date):
         WHERE date = '{date}'
         GROUP BY currency
     """
-    print(f"Executing SQL to get FX rates for date {date}: {fx}")
+    # print(f"Executing SQL to get FX rates for date {date}: {fx}")
     mycursor.execute(fx)
     result = mycursor.fetchall()
 
     for x in result:
         fx_list[x['currency']] = x['conversionRate']
-        print(fx_list)
+        # print(fx_list)
 
 
 def row_to_sql_values(row_tuple):
@@ -75,7 +75,7 @@ def row_to_sql_values(row_tuple):
 for proc_date in working_days():
     if proc_date not in select_date('account_level'):
         dropbox_folder = os.path.join(dropbox_path, str(proc_date))
-        print(dropbox_folder)
+        # print(dropbox_folder)
 
         if not os.path.exists(dropbox_folder):
             # print(f"{Color.WARNING}⚠ Map niet gevonden: {dropbox_folder}{Color.ENDC}")
