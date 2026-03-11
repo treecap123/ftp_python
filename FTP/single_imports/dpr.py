@@ -236,6 +236,7 @@ for workday in working_days():
 
         for filename in os.listdir(folder):
             if "Daily Position" in filename:
+                print(f"~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Found DPR file: {filename} for date: {workday}")
                 df = pd.read_csv(os.path.join(folder, filename))
                 df = df.replace({np.nan: None})
                 df.columns = df.columns.str.strip().str.lower()
