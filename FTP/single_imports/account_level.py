@@ -8,8 +8,13 @@ import dotenv
 
 import io
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
-
 from Functions.system.path.path import dropbox_path
+
+# Railway working directory
+root_root_dir = os.getcwd()
+
+# voeg FTP toe aan python path
+sys.path.append(os.path.join(root_root_dir, "FTP"))
 
 from Functions.date.date_functions import get_previous_workday, select_date, working_days
 from Functions.connection.db_connection import get_cursor
