@@ -78,13 +78,13 @@ for proc_date in working_days():
         print(dropbox_folder)
 
         if not os.path.exists(dropbox_folder):
-            print(f"{Color.WARNING}⚠ Map niet gevonden: {dropbox_folder}{Color.ENDC}")
+            # print(f"{Color.WARNING}⚠ Map niet gevonden: {dropbox_folder}{Color.ENDC}")
             continue
 
         for file in os.listdir(dropbox_folder):
             if "Daily Cash Summary Account Level" not in file:
                 continue
-
+            print(f"{Color.OKBLUE}📂 Verwerken bestand: {file}{Color.ENDC}")
             df = pd.read_csv(os.path.join(dropbox_folder, file))
             df = df.replace({np.nan: ''})
             df.sort_values(by=['Cash Title', 'Currency'], inplace=True)
