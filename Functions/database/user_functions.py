@@ -3,10 +3,13 @@ import os
 import logging
 from datetime import datetime, timedelta
 
-# Zorg dat je backend-map in PYTHONPATH zit
-sys.path.append(r'/')
+# Railway working directory
+root_root_dir = os.getcwd()
 
-from global_functions.database_connection.connection import get_cursor
+# voeg FTP toe aan python path
+sys.path.append(os.path.join(root_root_dir))
+
+from Functions.connection.db_connection import get_cursor
 
 
 

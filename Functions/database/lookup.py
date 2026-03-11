@@ -2,7 +2,7 @@ import sys
 import json
 from datetime import datetime
 
-sys.path.append(r'C:\Users\Operations\Documents\.AAtreecap\test\backend')
+
 
 
 def account(abn_account, cursor):

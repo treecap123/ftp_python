@@ -2,11 +2,13 @@ import sys
 import os
 from typing import Optional, Union
 from datetime import datetime, timedelta, date
+# Railway working directory
+root_root_dir = os.getcwd()
 
-# Zorg dat je backend-map in PYTHONPATH zit
-sys.path.append(r'C:\Users\Operations\Documents\.AAtreecap\test\backend')
+# voeg FTP toe aan python path
+sys.path.append(os.path.join(root_root_dir))
 
-from global_functions.database_connection.connection import get_cursor
+from Functions.connection.db_connection import get_cursor
 
 blacklist = []
 
