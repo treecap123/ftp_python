@@ -66,7 +66,7 @@ def cleanup_old_folders(base_dir, keep=5):
     old_folders = folders[keep:]
 
     for d, path in old_folders:
-        print(f"🗑 removing old folder {path}")
+        # print(f"🗑 removing old folder {path}")
         shutil.rmtree(path)
 def find_date(filename):
     for p in DATE_PATTERNS:
@@ -91,10 +91,10 @@ def unzip(zip_path, target):
 # =========================================================
 # MAIN LOOP
 # =========================================================
-print("🚀 SFTP SERVICE STARTED (HOURLY MODE)")
+# print("🚀 SFTP SERVICE STARTED (HOURLY MODE)")
 
 while True:
-    print(f"\n⏰ RUN @ {datetime.now()}")
+    # print(f"\n⏰ RUN @ {datetime.now()}")
 
     client = paramiko.SSHClient()
     client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
@@ -111,7 +111,7 @@ while True:
     remote_files = sftp.listdir()
 
     for file in remote_files:
-        print(f"🔍 CHECK: {file}")
+        # print(f"🔍 CHECK: {file}")
 
         # -----------------------------
         # HTML ZIP (ISIN based)
@@ -119,7 +119,7 @@ while True:
         if file.endswith(".html.zip"):
             isin = find_isin(file)
             if not isin:
-                print("❌ no ISIN → skip")
+                # print("❌ no ISIN → skip")
                 continue
 
             target_dir = os.path.join(root_dir, "CA Notifications", isin)
@@ -131,7 +131,7 @@ while True:
         else:
             date = find_date(file)
             if not date:
-                print("❌ no date → skip")
+                # print("❌ no date → skip")
                 continue
 
             target_dir = os.path.join(root_dir, normalize_date(date))
@@ -143,14 +143,14 @@ while True:
         done_marker = os.path.join(target_dir, f".{file}.done")
 
         if os.path.exists(done_marker):
-            print("⏭️  ALREADY PROCESSED")
+            # print("⏭️  ALREADY PROCESSED")
             continue
 
         # -----------------------------
         # DOWNLOAD
         # -----------------------------
         local_zip = os.path.join(TEMP_DIR, file)
-        print(f"⬇️ DOWNLOAD {file}")
+        # print(f"⬇️ DOWNLOAD {file}")
         sftp.get(file, local_zip)
 
         # -----------------------------
@@ -165,7 +165,7 @@ while True:
         with open(done_marker, "w") as f:
             f.write(datetime.now().isoformat())
 
-        print("✅ DONE")
+        # print("✅ DONE")
 
     cleanup_old_folders(root_dir, keep=5)
 
@@ -182,5 +182,5 @@ while True:
         print(f"⚠ ERROR RUNNING IMPORT SCRIPTS: {e}")
         
 
-    print("😴 SLEEPING 1 HOUR...\n")
+    # print("😴 SLEEPING 1 HOUR...\n")
     time.sleep(SLEEP_SECONDS)

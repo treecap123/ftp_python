@@ -4,7 +4,7 @@ import os
 root_root_dir = os.getcwd()
 
 # Backend root
-root_dir = os.path.join(root_root_dir, "backend")
+root_dir = os.path.join(root_root_dir, "FTP")
 
 # Data volume (SFTP downloads)
 dropbox_path = "/data"
