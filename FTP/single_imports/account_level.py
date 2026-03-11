@@ -13,7 +13,7 @@ sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
 root_root_dir = os.getcwd()
 
 # voeg FTP toe aan python path
-sys.path.append(os.path.join(root_root_dir, "FTP"))
+sys.path.append(os.path.join(root_root_dir))
 
 from Functions.date.date_functions import get_previous_workday, select_date, working_days
 from Functions.connection.db_connection import get_cursor
