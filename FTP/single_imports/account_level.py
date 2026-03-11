@@ -82,8 +82,13 @@ for proc_date in working_days():
             continue
 
         for file in os.listdir(dropbox_folder):
-            if "Daily Cash Summary Account Level" not in file:
+            if file.startswith("."):
                 continue
+
+            if "Daily Cash Summary Account Level" not in file or not file.endswith(".csv"):
+                continue
+
+
             print(f"{Color.OKBLUE}📂 Verwerken bestand: {file}{Color.ENDC}")
             df = pd.read_csv(os.path.join(dropbox_folder, file))
             df = df.replace({np.nan: ''})
