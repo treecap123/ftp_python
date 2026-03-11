@@ -79,19 +79,21 @@ def import_ca_xml_into_clearing():
         today_str = datetime.today().strftime("%Y-%m-%d")
 
         if work_day not in existing_dates and work_day != today_str:
-            print(f"📅 Verwerking gestart voor {work_day}...")
+            # print(f"📅 Verwerking gestart voor {work_day}...")
             dropbox_folder = os.path.join(dropbox_path, work_day.strftime("%Y-%m-%d"))
 
             if not os.path.exists(dropbox_folder):
-                print(f"⚠️ Map niet gevonden: {dropbox_folder}")
+                # print(f"⚠️ Map niet gevonden: {dropbox_folder}")
                 continue
 
             for file in os.listdir(dropbox_folder):
+                print(f"🔍 Controleren bestand: {file}")
                 if file.startswith("."):
                     continue
                 if "3182-C3182-CA (L)" not in file:
                     continue
 
+                print(f"✅ Bestand geselecteerd voor verwerking: {file}")
                 full_path = os.path.join(dropbox_folder, file)
                 print(f"📄 Verwerken van bestand: {full_path}")
 
