@@ -87,21 +87,21 @@ def import_ca_xml_into_clearing():
                 continue
 
             for file in os.listdir(dropbox_folder):
-                print(f"🔍 Controleren bestand: {file}")
+                # print(f"🔍 Controleren bestand: {file}")
                 if file.startswith("."):
                     continue
                 if "3182-C3182-CA (L)" not in file:
                     continue
 
-                print(f"✅ Bestand geselecteerd voor verwerking: {file}")
+                # print(f"✅ Bestand geselecteerd voor verwerking: {file}")
                 full_path = os.path.join(dropbox_folder, file)
-                print(f"📄 Verwerken van bestand: {full_path}")
+                # print(f"📄 Verwerken van bestand: {full_path}")
 
                 try:
                     tree = ET.parse(full_path)
                     root = tree.getroot()
                 except Exception as e:
-                    print(f"❌ XML-fout in {file}: {e}")
+                    # print(f"❌ XML-fout in {file}: {e}")
                     continue
 
                 for account_actions in root.findall(".//AccountCorporateActions"):

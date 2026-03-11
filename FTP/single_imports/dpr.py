@@ -136,7 +136,7 @@ def make_abn_symbol(row):
 
 def make_option_key(row):
 
-    print("\n====================")
+    # print("\n====================")
     # print("Processing row:", row)
 
     required = [
@@ -158,67 +158,67 @@ def make_option_key(row):
 
     # Symbol
     symbol = str(row["Symbol"]).strip()
-    print("[STEP] Parsed symbol:", symbol)
+    # print("[STEP] Parsed symbol:", symbol)
 
     # Expiry
     try:
         expiry_raw = str(int(float(row["Expiry_Date"])))
-        print("[STEP] Raw expiry numeric:", expiry_raw)
+        # print("[STEP] Raw expiry numeric:", expiry_raw)
 
         expiry_dt = dt.strptime(expiry_raw, "%Y%m%d")
         expiry = expiry_dt.strftime("%m/%d/%y")
 
-        print("[STEP] Formatted expiry:", expiry)
+        # print("[STEP] Formatted expiry:", expiry)
 
     except Exception as e:
-        print("[FAIL] Expiry conversion failed:", e)
+        # print("[FAIL] Expiry conversion failed:", e)
         return None
 
     # Put/Call
     putcall_raw = str(row["Put_Call"]).strip().upper()
-    print("[STEP] Raw Put/Call:", putcall_raw)
+    # print("[STEP] Raw Put/Call:", putcall_raw)
 
     if putcall_raw == "CALL":
         putcall = "C"
     elif putcall_raw == "PUT":
         putcall = "P"
     else:
-        print("[FAIL] Invalid Put/Call value:", putcall_raw)
+        # print("[FAIL] Invalid Put/Call value:", putcall_raw)
         return None
 
-    print("[STEP] Converted Put/Call:", putcall)
+    # print("[STEP] Converted Put/Call:", putcall)
 
     # Strike
     try:
         strike_float = float(row["Strike_Price"])
-        print("[STEP] Raw strike float:", strike_float)
+        # print("[STEP] Raw strike float:", strike_float)
 
         if strike_float.is_integer():
             strike = str(int(strike_float))
-            print("[STEP] Strike is integer, formatted as:", strike)
+            # print("[STEP] Strike is integer, formatted as:", strike)
         else:
             strike = str(strike_float)
-            print("[STEP] Strike is decimal, formatted as:", strike)
+            # print("[STEP] Strike is decimal, formatted as:", strike)
 
     except Exception as e:
-        print("[FAIL] Strike conversion failed:", e)
+        # print("[FAIL] Strike conversion failed:", e)
         return None
 
     # Currency
     ccy_raw = str(row["Valuation_Price_Currency"]).strip().upper()
-    print("[STEP] Raw currency:", ccy_raw)
+    # print("[STEP] Raw currency:", ccy_raw)
 
     if ccy_raw == "USD":
         country = "US"
     else:
         country = ccy_raw  # fallback
 
-    print("[STEP] Country code used:", country)
+    # print("[STEP] Country code used:", country)
 
     final_key = f"{symbol} {country} {expiry} {putcall}{strike} Equity"
 
-    print("[SUCCESS] Final Option Key:", final_key)
-    print("====================\n")
+    # print("[SUCCESS] Final Option Key:", final_key)
+    # print("====================\n")
 
     return final_key
 
