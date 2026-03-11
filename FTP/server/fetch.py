@@ -15,7 +15,7 @@ import shutil
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../"))
 sys.path.insert(0, BASE_DIR)
 
-from Functions.system.path import root_dir
+from Functions.system.path.path import root_dir
 
 # =========================================================
 # LOCAL BASE64 SSH KEY
