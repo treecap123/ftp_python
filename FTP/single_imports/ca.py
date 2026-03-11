@@ -241,16 +241,12 @@ def import_ca_xml_into_clearing():
                             )
                         """
 
-                        # Insert naar beide databases
-                        for cur, con, label in [
-                            (mycursor, conn, "Local"),
-                        ]:
-                            try:
-                                cur.execute(sql, values)
-                                con.commit()
-                                print(f"✅ {label}: Ingevoegde corporate action voor {account_id} - {symbol}")
-                            except pymysql.MySQLError as err:
-                                print(f"❌ {label}-insert mislukt: {err}")
+                        try:
+                            mycursor.execute(sql, values)
+                            conn.commit()
+                        except Exception as e:
+                            print(f"❌ Database-insert fout voor {file}: {e}")
+                            continue
 
             print(f"✅ Dag {work_day} volledig verwerkt.\n")
 
