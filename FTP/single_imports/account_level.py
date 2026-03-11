@@ -8,7 +8,6 @@ import dotenv
 
 import io
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
-from Functions.system.path.path import dropbox_path
 
 # Railway working directory
 root_root_dir = os.getcwd()
@@ -20,6 +19,8 @@ from Functions.date.date_functions import get_previous_workday, select_date, wor
 from Functions.connection.db_connection import get_cursor
 from Functions.database.lookup import account
 from Functions.log_tools.logging import Color
+from Functions.system.path.path import dropbox_path
+
 
 # ─────────────────────────────────────────────
 # Setup: twee connecties
