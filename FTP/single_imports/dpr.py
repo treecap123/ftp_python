@@ -233,6 +233,12 @@ for workday in working_days():
 
         print(f"Processing DPR for date: {workday} in folder: {folder}")
 
+        if not os.path.exists(folder):
+            # print(f"⚠️ Folder not found: {folder}")
+            continue
+
+        print(f"Processing DPR for date: {workday} in folder: {folder}")
+
 
         for filename in os.listdir(folder):
             if "Daily Position" in filename:
