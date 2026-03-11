@@ -36,7 +36,7 @@ except Exception as e:
 fx_list = {
     'EUR': 0, 'GBP': 0, 'USD': 0, 'AUD': 0, 'CAD': 0,
     'CHF': 0, 'DKK': 0, 'HKD': 0, 'JPY': 0, 'MXN': 0,
-    'NOK': 0, 'SEK': 0, 'SGD': 0, 'PLN': 0,
+    'NOK': 0, 'SEK': 0, 'SGD': 0, 'PLN': 0, 'ILS': 0,
 }
 
 
