@@ -6,10 +6,17 @@ import json
 import pandas as pd
 import numpy as np
 from datetime import datetime as dt
-from datetime import date
+
 
 import io
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
+
+# Railway working directory
+root_root_dir = os.getcwd()
+
+# voeg FTP toe aan python path
+sys.path.append(os.path.join(root_root_dir))
+
 
 # === Imports ===
 from Functions.date.date_functions import get_previous_workday, working_days, select_date
@@ -18,11 +25,6 @@ from Functions.system.path.path import dropbox_path, root_dir
 from Functions.database.lookup import account
 from Functions.log_tools.logging import Color
 
-# Railway working directory
-root_root_dir = os.getcwd()
-
-# voeg FTP toe aan python path
-sys.path.append(os.path.join(root_root_dir))
 
 
 # === ✅ Gebruik standaard cursors ===
