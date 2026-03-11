@@ -241,6 +241,9 @@ for workday in working_days():
 
 
         for filename in os.listdir(folder):
+
+            if filename.startswith("."):
+                continue
             if "Daily Position" in filename:
                 print(f"~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Found DPR file: {filename} for date: {workday}")
                 df = pd.read_csv(os.path.join(folder, filename))
