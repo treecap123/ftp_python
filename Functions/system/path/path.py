@@ -3,6 +3,9 @@ import os
 # Railway working directory
 root_root_dir = os.getcwd()
 
+# Table schema's
+tables_path = os.path.join(root_root_dir, "database", "config", "tables.py")
+
 # Backend root
 root_dir = os.path.join(root_root_dir, "FTP")
 
