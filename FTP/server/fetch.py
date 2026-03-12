@@ -5,6 +5,7 @@ import base64
 import re
 import zipfile
 import time
+import subprocess
 from datetime import datetime
 from io import StringIO
 import shutil
@@ -18,14 +19,9 @@ sys.path.insert(0, BASE_DIR)
 from Functions.system.path.path import root_dir
 
 # =========================================================
-# LOCAL BASE64 SSH KEY
-# =========================================================
-LOCAL_PRIVATE_KEY_B64 = "LS0tLS1CRUdJTiBSU0EgUFJJVkFURSBLRVktLS0tLQpNSUlFb2dJQkFBS0NBUUVBalBKdklTVDVqR0NkYlV1bkZyelJxM0d5RTF2QWtkWDdnMnUwWStKL0phVTQvdmE2Ck5oeUx4QmRsemM0R0ZBd09tQU5Ha1R6KzRheTdreHAvcmU0U0hGcWtLY3hpRjQvRkdseml2Y2liRk5WL05xSTYKcVZPVDcrOEZKcU1VeUZRVW1TRmRId0drc2MxcFBEVVIrZTJwbFlkak9pR2IrYnRwZFRaanpzazk4L1M1b0dIdwpvNXR1L0hoYk9PbHY0b2oyakcycm1FWlNoejAwWXp1dmRjN2FldkFoRW5TZWhid1JEVisvVXFXTWtsTm9jTVJBCklQdUoyUWJMRTlqbFVzdTdGMzhjc0lsLzdGZ2VZUVlKcENmN0RpVytiMk01VTFqUGNjVlpuYTE3Q0NET21yRm0KanZCMDNsQ2VZalk4T0NCTTVtR3ZmbmdYbGtyMXRCWGpaR1VOZVFJQkpRS0NBUUJ5U0FjVDlIZFBPWlJtZExEOQpyZHB2VlVSSERCK1kxd05IOW5hV0xVUi9ZMTZsTnNCKzVyYURVVDNKZHAwbEF0dG1mekpNUDBzemhTSjNSZXI3CnVoeUZzVWJWeUUrSXVjSm9adjBJbE5ERXlNZ0N5TG54RTFWYXdjelRPQjZ3UkN4Z2UrcWpoTXE1clhmcm9LYksKcFFZS2lYTU1pZlFXbC9Ta09mQVBjcnljU0taeHMvZzZId2x2b3pjL0tXUDJ4eUt3NXgrSmxuOVZqM1BFR2VvMAo1eFpCdDFScTdGd2paUjBndndqN0IvTmo0T2FrbWNRZE9GaWNwTG45cE03dWJ4N1BHU1hWWVpHdnNqVDE2dTJMCmtHNCtmaUtlNGx2RFJrTDhYbWk4U2ZwbE1YNW9lSStRYklHU0Y5WHZXeE5BcmJBWjVZc0gyQUtxT1VvVmhYMEcKeFlObEFvR0JBTzd0SGJ6dTZrZTk4TmZmTDBRYldmSmVSUUpSaTdmVExpeUNqbzlNekNsUFFKS2picng5Wm9iaApqYnVQSHNFdzRWOC82R1J3dVltOWxhNnZtejZmTkZ0bUUwRU0vM3kvQm55QkNtc25KdWc2aU9XODFMckJNMUhsCjIwNWlQaVF6OURiT1A2ZjFEUVI2S2h3TTBjNi9weE9oaWJqK09YNy9VeFJUMU81UTlYcVhBb0dCQUpjRTVqMUsKNERVMDE5QkhqNmYwc09IdGxDU0RiK3lYVlpLekZiS0JYU2JKa2JkaW5oc1A0VjIyb2lOYXVMak1xWFZEdDlBMgo0dWduREZraTRWSW5IMlJjcXJXQ3hPQ1FYRDVzYXZEN2lxeitBVWVaUkI1MnBDcnVRbWZzejlVMVBGbkRFRUM5CkdWa2U1dnA2L0tLR2tmRWs1NGJEWHRtUjAxdFd4djBDalFwdkFvR0JBTFRQSFd4aHhnekhGeC9uS3JBVXNzVkEKYTVNTlJ5TlR0RDFiNFlFek1yZDZQclFvcHRQVWhQQnpWb0FaUjdUTEMycXM1emRBakdnOGNVWHNyTlZ4ajJmQwozaU5qeUVLNkVyOFZpMWdCOCs0Q3lIYUJENi9zSnRZeFo3RHdabUNXQk9zMFM5a01lSTNFTzRyWlJOUFBUZ0VFCm41THA1bEpFclpMWHFBNUxHcUgxQW9HQWNramxsaXJUTHk3b2dmRDNGMUZqUXpCVWJxaW51Zlg3a1p4SHhWcjYKWW9xemRnVnd1b2lPM3lKczNId0JhVUR1OFBUNXpnQUZxTU9hcEZHL1JSYXYrT3d1S0g2aTAzUXFJV2JOZUJoTgpSS1NMV01jREhmanE4QTVBRjB0czJMS3FOaGNUTitrTVEzRlUyVHA1L25Pc3Rueks0b1lDbHM4NEtYSWFDNU02ClRSVUNnWUVBMmdOMlIvSjViTFlDbFd4SzdWcU4yMzRleitmQ3RqWTQ5NEE1QXR0N3JONEtzY3JDZE9GaU5JdG0KVHZnR1g3K3JuYkJqMzdlQjZJZ3FJSTZmSXMyRi94Z1hpR0dtWkY5Y3BnbFJ5UjEwY0ZaWU1FY0syaTdZUWxEZQpaelVuZFhnR25JbDhVNkloQm5PYlpxbnFwWCtreHJuUWlGOFk1UlF1YXpJZ3ZGdzBpZHM9Ci0tLS0tRU5EIFJTQSBQUklWQVRFIEtFWS0tLS0tCg=="
-
-# =========================================================
 # CONFIG
 # =========================================================
-SLEEP_SECONDS = 3600  # 1 uur
+SLEEP_SECONDS = 3600
 REMOTE_DIR = os.environ.get("FTP_REMOTE_DIR", "/outgoing")
 HOSTNAME = os.environ.get("FTP_HOST", "91.213.201.22")
 USERNAME = os.environ.get("FTP_USER", "3182")
@@ -33,25 +29,23 @@ USERNAME = os.environ.get("FTP_USER", "3182")
 TEMP_DIR = os.path.join(os.path.dirname(root_dir), "temp")
 os.makedirs(TEMP_DIR, exist_ok=True)
 
+# =========================================================
+# SSH KEY
+# =========================================================
+LOCAL_PRIVATE_KEY_B64 = os.environ.get("FTP_PRIVATE_KEY")
 
-# =========================================================
-# SSH KEY LOAD
-# =========================================================
-key_b64 = os.environ.get("FTP_PRIVATE_KEY", LOCAL_PRIVATE_KEY_B64)
-private_key_str = base64.b64decode(key_b64).decode("utf-8")
+private_key_str = base64.b64decode(LOCAL_PRIVATE_KEY_B64).decode("utf-8")
 PRIVATE_KEY = paramiko.RSAKey.from_private_key(StringIO(private_key_str))
 
 # =========================================================
 # HELPERS
 # =========================================================
-DATE_PATTERNS = [r"20\d{2}[01]\d[0-3]\d", r"20\d{2}-\d{2}-\d{2}"]
-
-
 def cleanup_old_folders(base_dir, keep=5):
 
     folders = []
 
     for name in os.listdir(base_dir):
+
         path = os.path.join(base_dir, name)
 
         if os.path.isdir(path):
@@ -63,125 +57,175 @@ def cleanup_old_folders(base_dir, keep=5):
 
     folders.sort(reverse=True)
 
-    old_folders = folders[keep:]
-
-    for d, path in old_folders:
-        # print(f"🗑 removing old folder {path}")
+    for d, path in folders[keep:]:
+        print(f"🗑 removing old folder {path}")
         shutil.rmtree(path)
-def find_date(filename):
-    for p in DATE_PATTERNS:
-        m = re.search(p, filename)
-        if m:
-            return m.group()
-    return None
 
-def normalize_date(date_str):
-    if len(date_str) == 8:
-        return f"{date_str[:4]}-{date_str[4:6]}-{date_str[6:]}"
-    return date_str
+
+def find_date(filename):
+
+    m = re.search(r"20\d{2}-?\d{2}-?\d{2}", filename)
+
+    if not m:
+        return None
+
+    d = m.group().replace("-", "")
+
+    return f"{d[:4]}-{d[4:6]}-{d[6:]}"
+
 
 def find_isin(filename):
+
     m = re.search(r"[A-Z]{2}\d{10}", filename)
+
     return m.group() if m else None
 
+
 def unzip(zip_path, target):
-    with zipfile.ZipFile(zip_path, "r") as z:
-        z.extractall(target)
+
+    try:
+        with zipfile.ZipFile(zip_path, "r") as z:
+            z.extractall(target)
+    except Exception as e:
+        print(f"❌ unzip failed {zip_path}: {e}")
+
 
 # =========================================================
 # MAIN LOOP
 # =========================================================
-# print("🚀 SFTP SERVICE STARTED (HOURLY MODE)")
+
+print("🚀 SFTP SERVICE STARTED")
 
 while True:
-    # print(f"\n⏰ RUN @ {datetime.now()}")
 
-    client = paramiko.SSHClient()
-    client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-    client.connect(
-        hostname=HOSTNAME,
-        username=USERNAME,
-        pkey=PRIVATE_KEY,
-        timeout=15
-    )
+    print(f"\n⏰ RUN @ {datetime.now()}")
 
-    sftp = client.open_sftp()
-    sftp.chdir(REMOTE_DIR)
-
-    remote_files = sftp.listdir()
-
-    for file in remote_files:
-        # print(f"🔍 CHECK: {file}")
-
-        # -----------------------------
-        # HTML ZIP (ISIN based)
-        # -----------------------------
-        if file.endswith(".html.zip"):
-            isin = find_isin(file)
-            if not isin:
-                # print("❌ no ISIN → skip")
-                continue
-
-            target_dir = os.path.join(root_dir, "CA Notifications", isin)
-            os.makedirs(target_dir, exist_ok=True)
-
-        # -----------------------------
-        # DATE ZIP
-        # -----------------------------
-        else:
-            date = find_date(file)
-            if not date:
-                # print("❌ no date → skip")
-                continue
-
-            target_dir = os.path.join(root_dir, normalize_date(date))
-            os.makedirs(target_dir, exist_ok=True)
-
-        # -----------------------------
-        # DUPLICATE CHECK
-        # -----------------------------
-        done_marker = os.path.join(target_dir, f".{file}.done")
-
-        if os.path.exists(done_marker):
-            # print("⏭️  ALREADY PROCESSED")
-            continue
-
-        # -----------------------------
-        # DOWNLOAD
-        # -----------------------------
-        local_zip = os.path.join(TEMP_DIR, file)
-        # print(f"⬇️ DOWNLOAD {file}")
-        sftp.get(file, local_zip)
-
-        # -----------------------------
-        # UNZIP
-        # -----------------------------
-        unzip(local_zip, target_dir)
-        os.remove(local_zip)
-
-        # -----------------------------
-        # MARK AS DONE
-        # -----------------------------
-        with open(done_marker, "w") as f:
-            f.write(datetime.now().isoformat())
-
-        # print("✅ DONE")
-
-    cleanup_old_folders(root_dir, keep=5)
-
-    sftp.close()
-    client.close()
-
-    # run ../single_imports/alle python scripts in deze map
     try:
-        print(f"Looking in {os.path.join(root_dir, 'single_imports')} for import scripts...")
-        for file in os.listdir(os.path.join(root_dir, "single_imports")):
-            if file.endswith(".py"):
-                print(f"🚀 RUNNING IMPORT SCRIPT: {file}")
-                os.system(f"python {os.path.join(root_dir, 'single_imports', file)}")
-    except Exception as e:
-        print(f"⚠ ERROR RUNNING IMPORT SCRIPTS: {e}")
-        
 
-    # print("😴 SLEEPING 1 HOUR...\n")
+        client = paramiko.SSHClient()
+        client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+
+        client.connect(
+            hostname=HOSTNAME,
+            username=USERNAME,
+            pkey=PRIVATE_KEY,
+            timeout=20
+        )
+
+        sftp = client.open_sftp()
+        sftp.chdir(REMOTE_DIR)
+
+        remote_files = sftp.listdir_attr()
+
+        print(f"📦 Found {len(remote_files)} files")
+
+        for attr in remote_files:
+
+            file = attr.filename
+
+            print(f"🔍 CHECK: {file}")
+
+            # =================================================
+            # HTML / CA files (ISIN based)
+            # =================================================
+
+            if file.endswith(".html.zip"):
+
+                isin = find_isin(file)
+
+                if not isin:
+                    continue
+
+                target_dir = os.path.join(root_dir, "CA Notifications", isin)
+
+            # =================================================
+            # DATE BASED FILES
+            # =================================================
+
+            else:
+
+                date = find_date(file)
+
+                if not date:
+                    continue
+
+                target_dir = os.path.join(root_dir, date)
+
+            os.makedirs(target_dir, exist_ok=True)
+
+            done_marker = os.path.join(target_dir, f".{file}.done")
+
+            if os.path.exists(done_marker):
+                continue
+
+            # =================================================
+            # DOWNLOAD
+            # =================================================
+
+            local_file = os.path.join(TEMP_DIR, file)
+
+            try:
+                print(f"⬇ DOWNLOAD {file}")
+                sftp.get(file, local_file)
+            except Exception as e:
+                print(f"❌ download failed {file}: {e}")
+                continue
+
+            # =================================================
+            # PROCESS FILE
+            # =================================================
+
+            try:
+
+                if file.endswith(".zip"):
+
+                    unzip(local_file, target_dir)
+
+                else:
+
+                    shutil.move(local_file, os.path.join(target_dir, file))
+
+                with open(done_marker, "w") as f:
+                    f.write(datetime.now().isoformat())
+
+                print(f"✅ DONE {file}")
+
+            except Exception as e:
+
+                print(f"❌ processing failed {file}: {e}")
+
+            if os.path.exists(local_file):
+                os.remove(local_file)
+
+        cleanup_old_folders(root_dir, keep=5)
+
+        sftp.close()
+        client.close()
+
+        # =================================================
+        # RUN IMPORT SCRIPTS
+        # =================================================
+
+        imports_dir = os.path.join(root_dir, "single_imports")
+
+        print(f"\n📂 Looking in {imports_dir}")
+
+        if os.path.exists(imports_dir):
+
+            for file in os.listdir(imports_dir):
+
+                if file.endswith(".py"):
+
+                    script = os.path.join(imports_dir, file)
+
+                    print(f"🚀 RUNNING IMPORT SCRIPT: {file}")
+
+                    subprocess.run(["python", script])
+
+        print("\n😴 Sleeping 1 hour")
+
+    except Exception as e:
+
+        print(f"🔥 FATAL ERROR: {e}")
+
     time.sleep(SLEEP_SECONDS)
