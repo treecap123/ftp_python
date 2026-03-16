@@ -2,11 +2,11 @@ import os
 import pymysql
 
 railway_conf = {
-    "host": os.getenv("LOCAL_HOST"),
-    "user": os.getenv("LOCAL_USER"),
-    "password": os.getenv("LOCAL_PASSWORD"),
-    "database": os.getenv("LOCAL_DATABASE"),
-    "port": int(os.getenv("LOCAL_PORT", 3306)),
+    "host": os.getenv("MYSQLHOST"),
+    "user": os.getenv("MYSQLUSER"),
+    "password": os.getenv("MYSQL_ROOT_PASSWORD"),
+    "database": os.getenv("MYSQL_DATABASE"),
+    "port": int(os.getenv("MYSQLPORT", 3306)),
 }
 
 def get_cursor():
