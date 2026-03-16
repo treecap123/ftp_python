@@ -155,7 +155,7 @@ for table_name, info in tables.tables.items():
 
                         workday_str = extract_date_from_path(file_path)
 
-                        print(f"{Color.OKCYAN}Adding date column: {workday_str}{Color.ENDC}")
+                        print(f"{Color.CYAN}Adding date column: {workday_str}{Color.ENDC}")
 
                         df.insert(0, "date", workday_str)
 
