@@ -71,7 +71,7 @@ def is_processed(date):
 # ─────────────────────────────────────────────
 def parse_xml_file(file_path, account_treecap, portfolio_manager, unique_account):
 
-    print(f"Processing file: {file_path}")
+    # print(f"Processing file: {file_path}")
 
     tree = ET.parse(file_path)
     root = tree.getroot()
@@ -208,7 +208,7 @@ for proc_date in working_days():
 
         file_path = os.path.join(dropbox_folder, file)
 
-        print(f"Found file: {file_path}")
+        # print(f"Found file: {file_path}")
 
         unique_account_match = re.search(r'DEF\.([\w.-]+\.TRAD\.\d{1,2})', file)
 

@@ -57,7 +57,7 @@ def select_date(table, date_column="date"):
 
     sql = f"SELECT DISTINCT `{date_column}` FROM {table}"
 
-    print(sql)
+    # print(sql)
 
     mycursor.execute(sql)
 
@@ -103,7 +103,7 @@ def extract_date_from_path(path: str):
 
 for table_name, info in tables.tables.items():
 
-    print(f"Controleer tabel: {table_name}")
+    # print(f"Controleer tabel: {table_name}")
 
     if "ProcessingDate" in info:
         date_col = info["ProcessingDate"]
@@ -112,41 +112,41 @@ for table_name, info in tables.tables.items():
 
     existing_dates = set(select_date(info['table'], date_col))
 
-    print(f"  Bestaande datums in {table_name}: {existing_dates}")
+    # print(f"  Bestaande datums in {table_name}: {existing_dates}")
 
     for werkdag in werkdagen:
 
-        print(f"Checking date: {werkdag}")
+        # print(f"Checking date: {werkdag}")
 
         if werkdag not in existing_dates:
 
-            print(f"{Color.WARNING}Missing {werkdag} in {table_name}{Color.ENDC}")
+            # print(f"{Color.WARNING}Missing {werkdag} in {table_name}{Color.ENDC}")
 
             folder_path = os.path.join(dropbox_path, str(werkdag))
 
             if not os.path.exists(folder_path):
 
-                print(f"{Color.WARNING}Folder not found: {folder_path}{Color.ENDC}")
+                # print(f"{Color.WARNING}Folder not found: {folder_path}{Color.ENDC}")
 
                 continue
 
             for file in os.listdir(folder_path):
 
                 if "UpcomingDividends-0000006372" in file:
-                    print(f"{Color.WARNING}Skipping file: {file}{Color.ENDC}")
+                    # print(f"{Color.WARNING}Skipping file: {file}{Color.ENDC}")
                     continue
 
                 if table_name in file and file.endswith(info.get('extension', '')):
 
                     file_path = os.path.join(folder_path, file)
 
-                    print(f"{Color.OKGREEN}Found file: {file_path}{Color.ENDC}")
+                    # print(f"{Color.OKGREEN}Found file: {file_path}{Color.ENDC}")
 
                     df = pd.read_csv(file_path, dtype=object)
 
                     if df.empty:
 
-                        print(f"{Color.WARNING}Skipping empty file: {file_path}{Color.ENDC}")
+                        # print(f"{Color.WARNING}Skipping empty file: {file_path}{Color.ENDC}")
 
                         continue
 
@@ -155,7 +155,7 @@ for table_name, info in tables.tables.items():
 
                         workday_str = extract_date_from_path(file_path)
 
-                        print(f"{Color.CYAN}Adding date column: {workday_str}{Color.ENDC}")
+                        # print(f"{Color.CYAN}Adding date column: {workday_str}{Color.ENDC}")
 
                         df.insert(0, "date", workday_str)
 
@@ -225,9 +225,9 @@ for table_name, info in tables.tables.items():
                     # SQL
                     # ─────────────────────────
 
-                    print("DF columns:", list(df.columns))
-
-                    print("DB columns:", info["column_names"])
+                    # print("DF columns:", list(df.columns))
+                    #
+                    # print("DB columns:", info["column_names"])
 
                     sql_columns = ", ".join(f"`{col}`" for col in info["column_names"])
 
@@ -242,7 +242,7 @@ for table_name, info in tables.tables.items():
 
                     records = clean_records(records)
 
-                    print(f"Inserting {len(records)} rows into {info['table']}")
+                    # print(f"Inserting {len(records)} rows into {info['table']}")
 
                     try:
 

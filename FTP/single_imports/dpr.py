@@ -151,7 +151,7 @@ def make_option_key(row):
     for key in required:
         val = row.get(key)
         if val is None or str(val).strip() == "":
-            print(f"[FAIL] Missing required field: {key} | Value: {val}")
+            # print(f"[FAIL] Missing required field: {key} | Value: {val}")
             return None
         else:
             print(f"[OK] {key} = {val}")
@@ -231,13 +231,13 @@ for workday in working_days():
     if workday not in existing_dates and workday:
         folder = os.path.join(dropbox_path, str(workday))
 
-        print(f"Processing DPR for date: {workday} in folder: {folder}")
+        # print(f"Processing DPR for date: {workday} in folder: {folder}")
 
         if not os.path.exists(folder):
             # print(f"⚠️ Folder not found: {folder}")
             continue
 
-        print(f"Processing DPR for date: {workday} in folder: {folder}")
+        # print(f"Proce/ssing DPR for date: {workday} in folder: {folder}")
 
 
         for filename in os.listdir(folder):
@@ -245,7 +245,7 @@ for workday in working_days():
             if filename.startswith("."):
                 continue
             if "Daily Position" in filename:
-                print(f"~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Found DPR file: {filename} for date: {workday}")
+                # print(f"~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Found DPR file: {filename} for date: {workday}")
                 df = pd.read_csv(os.path.join(folder, filename))
                 df = df.replace({np.nan: None})
                 df.columns = df.columns.str.strip().str.lower()

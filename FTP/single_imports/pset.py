@@ -125,10 +125,10 @@ for workday in working_days():
 
     folder = os.path.join(dropbox_path, str(workday))
 
-    print(f"\n🔥 PROCESS DATE → {workday}")
+    # print(f"\n🔥 PROCESS DATE → {workday}")
 
     if not os.path.isdir(folder):
-        print(f"❌ Folder missing: {folder}")
+        # print(f"❌ Folder missing: {folder}")
         continue
 
     target_file = None
@@ -146,7 +146,7 @@ for workday in working_days():
         print("❌ No PSET file found")
         continue
 
-    print(f"📄 Processing PSET file: {target_file}")
+    # print(f"📄 Processing PSET file: {target_file}")
 
     df = pd.read_csv(target_file, dtype=object)
     df = df.replace({np.nan: None})
@@ -236,7 +236,7 @@ for workday in working_days():
 
         conn.commit()
 
-        print(f"✅ Inserted {len(data)} rows → PSET")
+        # print(f"✅ Inserted {len(data)} rows → PSET")
 
     except Exception as e:
 

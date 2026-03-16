@@ -137,12 +137,12 @@ for workday in working_days():
     if workday in existing_dates:
         continue
 
-    print(f"{Color.WARNING}Processing {workday}{Color.ENDC}")
+    # print(f"{Color.WARNING}Processing {workday}{Color.ENDC}")
 
     folder = os.path.join(dropbox_path, str(workday))
 
     if not os.path.isdir(folder):
-        print(f"Folder missing: {folder}")
+        # print(f"Folder missing: {folder}")
         continue
 
     for fname in os.listdir(folder):
@@ -150,7 +150,7 @@ for workday in working_days():
         if KEY not in fname or not fname.lower().endswith(".csv"):
             continue
 
-        print(f"Processing file: {fname}")
+        # print(f"Processing file: {fname}")
 
         file_path = os.path.join(folder, fname)
 
@@ -204,20 +204,20 @@ for workday in working_days():
 
         data = [tuple(r[c] for c in COLUMNS) for _, r in df.iterrows()]
 
-        print(f"{Color.OKBLUE}Prepared {len(data)} records{Color.ENDC}")
+        # print(f"{Color.OKBLUE}Prepared {len(data)} records{Color.ENDC}")
 
         try:
 
             mycursor.executemany(insert_sql, data)
             conn.commit()
 
-            print(f"{Color.OKGREEN}{len(data)} records inserted{Color.ENDC}")
+            # print(f"{Color.OKGREEN}{len(data)} records inserted{Color.ENDC}")
 
         except Exception as e:
 
             conn.rollback()
 
-            print(f"{Color.WARNING}Insert error: {e}{Color.ENDC}")
+            # print(f"{Color.WARNING}Insert error: {e}{Color.ENDC}")
 
 conn.close()
 mycursor.close()

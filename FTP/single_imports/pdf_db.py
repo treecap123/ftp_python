@@ -71,7 +71,7 @@ def parse_account_from_filename(filename):
 
     base = os.path.basename(filename)
 
-    print(f"\n{Color.OKBLUE}📄 Bestand: {base}{Color.ENDC}")
+    # print(f"\n{Color.OKBLUE}📄 Bestand: {base}{Color.ENDC}")
 
     if re.match(r"^DEF\.6370-\d{8}\.pdf$", base):
         return "6370", "6370"
@@ -118,15 +118,15 @@ def process_pdfs():
 
         existing_files = select_files_for_date("files", proc_date_str)
 
-        print(f"\n{Color.HEADER}─────────────────────────────────────────────{Color.ENDC}")
-        print(f"{Color.OKBLUE}📅 Verwerk datum: {proc_date_str}{Color.ENDC}")
-        print(f"{Color.CYAN}   → {len(existing_files)} bestaande PDF's gevonden{Color.ENDC}")
-        print(f"{Color.HEADER}─────────────────────────────────────────────{Color.ENDC}")
+        # print(f"\n{Color.HEADER}─────────────────────────────────────────────{Color.ENDC}")
+        # print(f"{Color.OKBLUE}📅 Verwerk datum: {proc_date_str}{Color.ENDC}")
+        # print(f"{Color.CYAN}   → {len(existing_files)} bestaande PDF's gevonden{Color.ENDC}")
+        # print(f"{Color.HEADER}─────────────────────────────────────────────{Color.ENDC}")
 
         dropbox_folder = os.path.join(dropbox_path, proc_date_str)
 
         if not os.path.exists(dropbox_folder):
-            print(f"{Color.WARNING}⚠ Geen map gevonden: {dropbox_folder}{Color.ENDC}")
+            # print(f"{Color.WARNING}⚠ Geen map gevonden: {dropbox_folder}{Color.ENDC}")
             continue
 
         for file in os.listdir(dropbox_folder):
@@ -138,15 +138,15 @@ def process_pdfs():
                 continue
 
             if re.match(r"^DEF\.6370\.C6370\.TRAD\.\d+-\d{8}\.pdf$", file, re.IGNORECASE):
-                print(f"{Color.WARNING}⚠ Skip TCAF_C TRAD: {file}{Color.ENDC}")
+                # print(f"{Color.WARNING}⚠ Skip TCAF_C TRAD: {file}{Color.ENDC}")
                 continue
 
             if file in existing_files:
-                print(f"{Color.WARNING}⚠ Skip (al in DB): {file}{Color.ENDC}")
+                # print(f"{Color.WARNING}⚠ Skip (al in DB): {file}{Color.ENDC}")
                 continue
 
             if not re.match(r"^DEF\.6370.*\.pdf$", file, re.IGNORECASE):
-                print(f"{Color.WARNING}⚠ Skip (geen DEF.6370): {file}{Color.ENDC}")
+                # print(f"{Color.WARNING}⚠ Skip (geen DEF.6370): {file}{Color.ENDC}")
                 continue
 
             file_path = os.path.join(dropbox_folder, file)
@@ -154,7 +154,7 @@ def process_pdfs():
             account_id, abn_account = parse_account_from_filename(file)
 
             if not account_id:
-                print(f"{Color.FAIL}⚠ Geen account in bestandsnaam: {file}{Color.ENDC}")
+                # print(f"{Color.FAIL}⚠ Geen account in bestandsnaam: {file}{Color.ENDC}")
                 continue
 
             account_treecap, portfolio_manager = account(account_id, cursor)
@@ -165,10 +165,10 @@ def process_pdfs():
             elif not portfolio_manager:
                 portfolio_manager = json.dumps(["TREECAP"])
 
-            print(f"   🆔 account_id      → {account_id}")
-            print(f"   🏦 account_treecap → {account_treecap}")
-            print(f"   👤 portfolio_mgr   → {portfolio_manager}")
-            print(f"   💼 abn_account     → {abn_account}")
+            # print(f"   🆔 account_id      → {account_id}")
+            # print(f"   🏦 account_treecap → {account_treecap}")
+            # print(f"   👤 portfolio_mgr   → {portfolio_manager}")
+            # print(f"   💼 abn_account     → {abn_account}")
 
             with open(file_path, "rb") as f:
 
@@ -191,9 +191,9 @@ def process_pdfs():
 
             net_liq = parse_number(net_liq_match.group(1)) if net_liq_match else None
             haircut = parse_number(haircut_match.group(1)) if haircut_match else None
-
-            print(f"   💰 NetLiq  → {net_liq}")
-            print(f"   ✂️  Haircut → {haircut}")
+            #
+            # print(f"   💰 NetLiq  → {net_liq}")
+            # print(f"   ✂️  Haircut → {haircut}")
 
             file_size = os.path.getsize(file_path)
             file_extension = os.path.splitext(file)[1].lstrip(".")
@@ -235,11 +235,11 @@ def process_pdfs():
                 cursor.execute(sql, values)
                 conn.commit()
 
-                print(f"{Color.OKGREEN}    ✅ Ingevoegd: {account_treecap} ({abn_account}) — NLQ={net_liq}, HC={haircut}{Color.ENDC}")
+                # print(f"{Color.OKGREEN}    ✅ Ingevoegd: {account_treecap} ({abn_account}) — NLQ={net_liq}, HC={haircut}{Color.ENDC}")
 
             except Exception as e:
 
-                print(f"{Color.FAIL}    ❌ Fout bij invoegen {file}: {e}{Color.ENDC}")
+                # print(f"{Color.FAIL}    ❌ Fout bij invoegen {file}: {e}{Color.ENDC}")
                 conn.rollback()
 
     print(f"{Color.OKGREEN}✔️ Alle PDF's succesvol verwerkt.{Color.ENDC}")

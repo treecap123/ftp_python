@@ -126,7 +126,7 @@ for workday in working_days():
 
     if not os.path.exists(folder):
 
-        print(f"{Color.WARNING}⚠ folder missing: {folder}{Color.ENDC}")
+        # print(f"{Color.WARNING}⚠ folder missing: {folder}{Color.ENDC}")
 
         continue
 
@@ -137,7 +137,7 @@ for workday in working_days():
             continue
 
 
-        print(f"{Color.OKBLUE}📄 processing: {file} ({workday_str}){Color.ENDC}")
+        # print(f"{Color.OKBLUE}📄 processing: {file} ({workday_str}){Color.ENDC}")
 
         file_path = os.path.join(folder, file)
 
@@ -200,7 +200,7 @@ for workday in working_days():
 
             conn.commit()
 
-            print(f"{Color.OKGREEN}✅ {len(data)} rows inserted for {workday_str}{Color.ENDC}")
+            # print(f"{Color.OKGREEN}✅ {len(data)} rows inserted for {workday_str}{Color.ENDC}")
 
 
         except Exception as e:

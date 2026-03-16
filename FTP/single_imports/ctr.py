@@ -36,8 +36,8 @@ try:
     mycursor.execute("SELECT DATABASE() AS db, USER() AS user;")
     info = mycursor.fetchone()
 
-    print(f"{Color.CYAN}🔌 Verbonden met server: {connection_info}{Color.ENDC}")
-    print(f"{Color.OKGREEN}📂 Database: {info['db']} | 👤 Gebruiker: {info['user']}{Color.ENDC}")
+    # print(f"{Color.CYAN}🔌 Verbonden met server: {connection_info}{Color.ENDC}")
+    # print(f"{Color.OKGREEN}📂 Database: {info['db']} | 👤 Gebruiker: {info['user']}{Color.ENDC}")
 
 except Exception as e:
     print(f"{Color.FAIL}❌ Kon verbindingsinfo niet ophalen: {e}{Color.ENDC}")
@@ -98,7 +98,7 @@ def import_ctr_xml_into_clearing():
 
     existing_dates_local = get_existing_dates(mycursor)
 
-    print(f"📅 Reeds verwerkte dagen (lokaal): {sorted(existing_dates_local)}")
+    # print(f"📅 Reeds verwerkte dagen (lokaal): {sorted(existing_dates_local)}")
 
     for proc_date in working_days():
 
@@ -107,12 +107,12 @@ def import_ctr_xml_into_clearing():
         if date_str in existing_dates_local or proc_date > date.today():
             continue
 
-        print(f"{Color.OKBLUE}📅 Verwerking gestart voor {date_str}...{Color.ENDC}")
+        # print(f"{Color.OKBLUE}📅 Verwerking gestart voor {date_str}...{Color.ENDC}")
 
         dropbox_folder = os.path.join(dropbox_path, date_str)
 
         if not os.path.exists(dropbox_folder):
-            print(f"{Color.WARNING}⚠ Geen map gevonden: {dropbox_folder}{Color.ENDC}")
+            # print(f"{Color.WARNING}⚠ Geen map gevonden: {dropbox_folder}{Color.ENDC}")
             continue
 
         for filename in os.listdir(dropbox_folder):
@@ -125,13 +125,13 @@ def import_ctr_xml_into_clearing():
 
             full_path = os.path.join(dropbox_folder, filename)
 
-            print(f"  🔍 Processing file: {full_path}")
+            # print(f"  🔍 Processing file: {full_path}")
 
             try:
                 tree = ET.parse(full_path)
 
             except Exception as e:
-                print(f"{Color.FAIL}❌ XML leesfout: {e}{Color.ENDC}")
+                # print(f"{Color.FAIL}❌ XML leesfout: {e}{Color.ENDC}")
                 continue
 
             root = tree.getroot()
@@ -149,9 +149,9 @@ def import_ctr_xml_into_clearing():
                         portfolio if isinstance(portfolio, list) else [portfolio]
                     )
 
-                print(
-                    f"{Color.CYAN}    ↳ Account: {account_id} | treecap={account_treecap} | portfolio={portfolio_manager}{Color.ENDC}"
-                )
+                # print(
+                #     f"{Color.CYAN}    ↳ Account: {account_id} | treecap={account_treecap} | portfolio={portfolio_manager}{Color.ENDC}"
+                # )
 
                 for fixed in account.findall(".//FixedDeal"):
 
@@ -243,10 +243,10 @@ def import_ctr_xml_into_clearing():
                     conn.commit()
         processed_count += 1
 
-        print(f"{Color.OKGREEN}✔ CTR data voor {date_str} verwerkt.{Color.ENDC}")
+        # print(f"{Color.OKGREEN}✔ CTR data voor {date_str} verwerkt.{Color.ENDC}")
 
     if processed_count == 0:
-        print(f"{Color.WARNING}Alles al up-to-date.{Color.ENDC}")
+        print(f"/{Color.WARNING}Alles al up-to-date.{Color.ENDC}")
 
 
 # ─────────────────────────────────────────────
