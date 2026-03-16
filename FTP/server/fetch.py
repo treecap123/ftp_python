@@ -94,7 +94,7 @@ print("🚀 SFTP SERVICE STARTED")
 
 while True:
 
-    print("⏰ RUN @", datetime.now())
+    # print("⏰ RUN @", datetime.now())
 
     client = paramiko.SSHClient()
     client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
@@ -111,11 +111,11 @@ while True:
 
     remote_files = sftp.listdir()
 
-    print("📦 files:", len(remote_files))
+    # print("📦 files:", len(remote_files))
 
     for file in remote_files:
 
-        print("🔍 CHECK:", file)
+        # print("🔍 CHECK:", file)
 
         # ===============================
         # CA files
@@ -152,7 +152,7 @@ while True:
 
         local_file = os.path.join(TEMP_DIR, file)
 
-        print("⬇ DOWNLOAD", file)
+        # print("⬇ DOWNLOAD", file)
 
         try:
             sftp.get(file, local_file)
@@ -190,7 +190,7 @@ while True:
 
     imports_dir = os.path.join(root_dir, "single_imports")
 
-    print("📂 looking for imports:", imports_dir)
+    # print("📂 looking for imports:", imports_dir)
 
     if os.path.exists(imports_dir):
 
